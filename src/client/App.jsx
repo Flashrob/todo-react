@@ -1,61 +1,61 @@
 import React from 'react';
 import { hot } from 'react-hot-loader';
 const moment = require('moment')
+
+import Form from './components/form/form'
+import ItemList from './components/item-list/item-list'
+import DeletedList from './components/deleted-list/deleted-list'
+
 class App extends React.Component {
 
   constructor(){
     super()
     this.state = {
-      todoList: []
+      todoList: [],
+      input: "",
+      deletedArray: []
     }
   }
 
-  removeHandler(e,i){
+  submitLift(e){
+    console.log("on submit", this.state.input)
+
     const todoList = this.state.todoList
-    todoList.splice(i, 1)
-    this.setState({todoList: todoList})
+    todoList.push({todo: this.state.input, time: moment().format('MMMM Do YYYY, h:mm:ss a')})
+    this.setState({todoList: todoList, input: ""})
+
   }
 
-  inputHandler(e){
-      let todo = e.target.value
-      this.setState({todo: todo})
+  inputLift(e){
+    this.setState({input: e.target.value})
   }
 
-  submitHandler(e){
-    e.preventDefault()
-    console.log("before push", this.state.todoList)
+  deleteLift(todoIndex){
+    const deletedItem = this.state.todoList[todoIndex]
+    const deletedArray = this.state.deletedArray
+    deletedArray.push(deletedItem)
 
-    if (this.state.todo.length < 1 || this.state.todo.length > 199){
-      
-      let warning = "Must be between 1 and 199 characters"
-      this.setState({warning: warning})
+    const todoList = this.state.todoList
 
-    } else {
+    todoList.splice(todoIndex, 1)
+    this.setState({todoList: todoList, deletedArray: deletedArray})
+  }
 
-      this.setState({warning: false})
-      const todoList = this.state.todoList
-      todoList.push({todo: this.state.todo, time: moment().format('MMMM Do YYYY, h:mm:ss a')})
-      e.target.elements.input.value = ""
-      this.setState({todoList: todoList, todo: ""})
+  eraseCompletelyLift(eraseCompletelyIndex){
+    const deletedArray = this.state.deletedArray
 
-      console.log("after push", this.state.todoList)
-    }
+    deletedArray.splice(eraseCompletelyIndex, 1)
+    this.setState({deletedArray: deletedArray})
   }
 
   render() {
-
-    const allTodos = this.state.todoList.map((todo, index)=>{
-      return <div key={index}><p key={index}>{todo.todo} created: {todo.time} <button onClick={(e)=>{this.removeHandler(e,index)}}>X</button></p></div>
-    })
-
+    
     return (
       <div>
-        <form onSubmit={(e)=>{this.submitHandler(e)}}>
-          <input type="text" name="input" onChange={(e)=>{this.inputHandler(e)}}></input>
-          <button type="submit">Add</button>
-          <p style={{color: "red" }}>{this.state.warning}</p>
-        </form>
-        {allTodos}
+        <Form inputLift={(e)=>{this.inputLift(e)}} submitLift={(e)=>{this.submitLift(this.state.input)}}/>
+        {this.state.input}
+        <ItemList todoList={this.state.todoList} deleteLift={(e)=>{this.deleteLift(e)}}/>
+        <DeletedList eraseCompletelyLift={(e)=>{this.eraseCompletelyLift(e)}} deletedList={this.state.deletedArray}/>
       </div>
     );
   }
