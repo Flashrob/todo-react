@@ -1,5 +1,4 @@
 import React from 'react';
-import { hot } from 'react-hot-loader';
 
 class ItemList extends React.Component {
 
@@ -11,8 +10,10 @@ class ItemList extends React.Component {
 
         const allTodos = this.props.todoList.map((todo, index)=>{
 
-            return <div key={index}>{todo.time} - {todo.todo} <button onClick={(e)=>{this.clickHandler(index)}}>X</button></div>
+                return <div key={index}>{todo.time} - {todo.todo} <button onClick={(e)=>{this.clickHandler(index)}}>X</button></div>
 
+
+            
         })
 
         return (
